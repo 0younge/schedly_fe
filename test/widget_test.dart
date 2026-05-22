@@ -22,6 +22,6 @@ void main() {
     await tester.tap(find.text('Sign up'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Create account'), findsOneWidget);
+    expect(find.text('Start with a simple profile.'), findsOneWidget);
   });
 }
