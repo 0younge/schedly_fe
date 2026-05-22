@@ -15,3 +15,21 @@ ios/Flutter/.last_build_id
 macos/Flutter/ephemeral/
 
 .DS_Store
+
+# Secrets / local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p8
+*.p12
+*.jks
+*.keystore
+secrets/
+android/key.properties
+android/app/*.jks
+ios/**/*.p8
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
