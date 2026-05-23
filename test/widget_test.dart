@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:schedly_fe/app/schedly_app.dart';
 
@@ -23,5 +25,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Start with a simple profile.'), findsOneWidget);
+  });
+
+  testWidgets('renders compact calendar without overflow', (tester) async {
+    tester.view.physicalSize = const Size(393, 852);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(const SchedlyApp());
+    await tester.tap(find.text('15'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('No schedules'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
