@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../auth/domain/auth_session_controller.dart';
 import 'calendar_header.dart';
 import 'month_grid.dart';
 import 'schedule_panel.dart';
 import 'schedule_preview.dart';
 
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({super.key});
+  const CalendarScreen({
+    super.key,
+    required this.authSessionController,
+  });
+
+  final AuthSessionController authSessionController;
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -57,7 +63,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CalendarHeader(monthLabel: monthLabel),
+                  AnimatedBuilder(
+                    animation: widget.authSessionController,
+                    builder: (context, _) {
+                      return CalendarHeader(
+                        monthLabel: monthLabel,
+                        session: widget.authSessionController.session,
+                        onLogout: widget.authSessionController.signOut,
+                      );
+                    },
+                  ),
                   const SizedBox(height: 24),
                   Expanded(
                     child: LayoutBuilder(

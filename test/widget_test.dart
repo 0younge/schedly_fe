@@ -44,6 +44,29 @@ void main() {
     expect(repository.loginEmail, 'owner@example.com');
     expect(repository.loginPassword, 'password123');
     expect(find.text('May 2026'), findsOneWidget);
+    expect(find.text('Owner'), findsOneWidget);
+    expect(find.text('owner@example.com'), findsOneWidget);
+    expect(find.text('Login'), findsNothing);
+  });
+
+  testWidgets('logs out and shows login action again', (tester) async {
+    final repository = _FakeAuthRepository();
+    await tester.pumpWidget(SchedlyApp(authRepository: repository));
+
+    await tester.tap(find.text('Login'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+        find.byType(EditableText).at(0), 'owner@example.com');
+    await tester.enterText(find.byType(EditableText).at(1), 'password123');
+    await tester.tap(find.text('Login'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Logout'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Login'), findsOneWidget);
+    expect(find.text('Owner'), findsNothing);
   });
 
   testWidgets('shows signup failure from auth repository', (tester) async {
