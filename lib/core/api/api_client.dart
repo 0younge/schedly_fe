@@ -16,11 +16,12 @@ class ApiClient {
 
   Future<Map<String, Object?>> postJson(
     String path,
-    Map<String, Object?> body,
-  ) async {
+    Map<String, Object?> body, {
+    String? authorization,
+  }) async {
     final response = await _httpClient.post(
       Uri.parse('$baseUrl$path'),
-      headers: const {'Content-Type': 'application/json'},
+      headers: _headers(authorization),
       body: jsonEncode(body),
     );
 
@@ -29,6 +30,28 @@ class ApiClient {
       return decodedBody;
     }
 
+    throw ApiException(
+      statusCode: response.statusCode,
+      code: decodedBody['code'] as String?,
+      message: decodedBody['message'] as String? ?? 'Request failed.',
+    );
+  }
+
+  Future<List<Object?>> getJsonList(
+    String path, {
+    Map<String, String> queryParameters = const {},
+    String? authorization,
+  }) async {
+    final response = await _httpClient.get(
+      Uri.parse('$baseUrl$path').replace(queryParameters: queryParameters),
+      headers: _headers(authorization),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return _decodeList(response.body);
+    }
+
+    final decodedBody = _decodeObject(response.body);
     throw ApiException(
       statusCode: response.statusCode,
       code: decodedBody['code'] as String?,
@@ -47,6 +70,26 @@ class ApiClient {
     }
 
     return {};
+  }
+
+  List<Object?> _decodeList(String body) {
+    if (body.isEmpty) {
+      return [];
+    }
+
+    final decoded = jsonDecode(body);
+    if (decoded is List<Object?>) {
+      return decoded;
+    }
+
+    return [];
+  }
+
+  Map<String, String> _headers(String? authorization) {
+    return {
+      'Content-Type': 'application/json',
+      if (authorization != null) 'Authorization': authorization,
+    };
   }
 }
 
