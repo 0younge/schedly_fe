@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_routes.dart';
 import 'domain/auth_repository.dart';
+import 'domain/auth_session_controller.dart';
 import 'auth_shell.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({
     super.key,
     required this.authRepository,
+    required this.authSessionController,
   });
 
   final AuthRepository authRepository;
+  final AuthSessionController authSessionController;
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -119,7 +122,7 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
-      await widget.authRepository.signup(
+      final session = await widget.authRepository.signup(
         name: _nameController.text,
         email: _emailController.text,
         password: _passwordController.text,
@@ -129,6 +132,7 @@ class _SignupScreenState extends State<SignupScreen> {
         return;
       }
 
+      widget.authSessionController.signIn(session);
       Navigator.of(context).pushNamedAndRemoveUntil(
         AppRoutes.calendar,
         (route) => false,
