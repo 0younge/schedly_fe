@@ -7,12 +7,20 @@ class SchedulePanel extends StatelessWidget {
     required this.monthName,
     required this.selectedDay,
     required this.schedules,
+    required this.canAddSchedule,
+    required this.isLoading,
+    required this.errorMessage,
+    required this.onAddSchedule,
     super.key,
   });
 
   final String monthName;
   final int selectedDay;
   final List<SchedulePreview> schedules;
+  final bool canAddSchedule;
+  final bool isLoading;
+  final String? errorMessage;
+  final VoidCallback? onAddSchedule;
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +37,39 @@ class SchedulePanel extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              '$monthName $selectedDay',
-              style: textTheme.titleLarge?.copyWith(color: Colors.white),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '$monthName $selectedDay',
+                    style: textTheme.titleLarge?.copyWith(color: Colors.white),
+                  ),
+                ),
+                if (canAddSchedule)
+                  IconButton.filledTonal(
+                    tooltip: 'Add schedule',
+                    onPressed: isLoading ? null : onAddSchedule,
+                    icon: const Icon(Icons.add_rounded),
+                  ),
+              ],
             ),
             const SizedBox(height: 16),
-            if (schedules.isEmpty)
+            if (isLoading)
+              const Center(
+                child: SizedBox.square(
+                  dimension: 22,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
+            else if (errorMessage != null)
+              Text(
+                errorMessage!,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xFFFCA5A5),
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            else if (schedules.isEmpty)
               Text(
                 'No schedules',
                 style: textTheme.bodyMedium?.copyWith(
